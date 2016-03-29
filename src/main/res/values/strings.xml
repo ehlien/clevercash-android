@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">CleverCash</string>
+    <string name="stringSignIn">Sign In</string>
+    <string name="stringSignUp">Sign Up</string>
+    <string name="stringPlay">Play</string>
+    <string name="stringGameStart">Play</string>
+    <string name="stringProfile">Profile</string>
+    <string name="stringLeaderboard">Leaderboard</string>
+    <string name="stringSettings">Settings</string>
+    <string name="stringEmpty"></string>
+    <string name="stringTimer">0:%1$d</string>
+    <string name="stringForgotPassword">Forgot Password</string>
+    <string name="stringGameUpdate">Update</string>
+    <string name="stringLoader"></string>
+    <string name="stringSignUpError">The username or email you have entered have already been used to sign up. Please try again.</string>
+
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+</resources>

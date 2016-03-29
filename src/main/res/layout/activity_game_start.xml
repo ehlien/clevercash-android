@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.ehlien.clevercash.GameStartActivity"
+    android:background="@color/colorSkyBlue"
+    android:id="@+id/gsRelativeLayout">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:weightSum="5">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Question #1"
+            android:id="@+id/questionNTV"
+            android:gravity="center"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/questionTTV"
+            android:gravity="center"
+            android:layout_weight="1" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/answerET"
+            android:layout_gravity="center_horizontal"
+            android:hint="Answer"
+            android:layout_weight="1"
+            android:textAlignment="center" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="1"
+            android:weightSum="5">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="PLAYERS ANSWERING"
+                    android:id="@+id/answeringsTV"
+                    android:gravity="center|bottom"
+                    android:layout_weight="1"
+                    android:textSize="11dp" />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="874"
+                    android:id="@+id/playersAnsweringTV"
+                    android:gravity="center|top"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textSize="11dp" />
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="QUESTION EARNINGS"
+                    android:id="@+id/earningsTV"
+                    android:gravity="center|bottom"
+                    android:layout_weight="1"
+                    android:textSize="11dp" />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="$8.74"
+                    android:id="@+id/questionEarningsTV"
+                    android:gravity="center|top"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textSize="11dp" />
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="POSSIBLE DIVIDEND"
+                    android:id="@+id/dividendTV"
+                    android:gravity="center|bottom"
+                    android:layout_weight="1"
+                    android:textSize="11dp" />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="$0.01"
+                    android:id="@+id/possibleDividendTV"
+                    android:gravity="center|top"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textSize="11dp" />
+            </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:weightSum="2">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="YOUR EARNINGS"
+                    android:id="@+id/earnedTV"
+                    android:gravity="center|bottom"
+                    android:layout_weight="1"
+                    android:textSize="11dp" />
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="$10.25"
+                    android:id="@+id/yourEarningsTV"
+                    android:gravity="center|top"
+                    android:layout_weight="1"
+                    android:textStyle="bold"
+                    android:textSize="11dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:text="0:20"
+                    android:id="@+id/timer20TV"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textSize="30dp"
+                    android:layout_weight="1" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LOCK IN YOUR ANSWER"
+            android:id="@+id/textView"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:background="@color/colorOrange"
+            android:textColor="@color/colorPurple"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:onClick="answerButton" />
+    </LinearLayout>
+</RelativeLayout>

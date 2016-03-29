@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ehlien.clevercash.HomeActivity"
+    android:id="@+id/homeRelativeLayout">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:weightSum="4">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PLAY"
+            android:id="@+id/playTV"
+            android:gravity="center"
+            android:textColor="#524656"
+            android:background="#A7C5BD"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:onClick="playButton" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PROFILE"
+            android:id="@+id/profileTV"
+            android:gravity="center"
+            android:textColor="#524656"
+            android:background="#E5DDCB"
+            android:layout_weight="1"
+            android:onClick="profileButton"
+            android:clickable="true" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LEADERBOARD"
+            android:id="@+id/leaderboardTV"
+            android:gravity="center"
+            android:textColor="#524656"
+            android:background="#EB7B59"
+            android:layout_weight="1"
+            android:clickable="true"
+            android:onClick="leaderboardButton" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SETTINGS"
+            android:id="@+id/settingsTV"
+            android:gravity="center"
+            android:textColor="#524656"
+            android:background="#CF4647"
+            android:layout_weight="1"
+            android:onClick="settingsButton"
+            android:clickable="true" />
+    </LinearLayout>
+</RelativeLayout>
