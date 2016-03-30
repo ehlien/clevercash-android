@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -45,7 +46,11 @@ public class GameStartActivity extends AppCompatActivity {
     private double dividend;
     private double earned;
     private String questionID;
-    private String [] users;
+
+    private int [] right;
+    private int [] wrong;
+    private int numberOfRight = 0;
+    private int numberOfWrong = 0;
 
     private Handler handler;
     private Runnable runnable = new Runnable() {
@@ -186,17 +191,20 @@ public class GameStartActivity extends AppCompatActivity {
         new Score().execute();
     }
 
-    public void createScore(CloudObject object, int right, int wrong, double pay) throws CloudException {
+    public void createScore(CloudObject object) throws CloudException {
         object.set("username", currentUser);
-        object.set("right", right);
-        object.set("wrong", wrong);
-        object.set("payouts", pay);
-        object.set("earnings", pay);
+        object.set("right", rightAnswer);
+        object.set("wrong", wrongAnswer);
+        object.set("tempRight", rightAnswer);
+        object.set("tempWrong", wrongAnswer);
+        object.set("payouts", earned);
+        object.set("earnings", earned);
         object.save(new CloudObjectCallback() {
             @Override
             public void done(CloudObject object, CloudException e) throws CloudException {
                 if (object != null) {
-                    Log.i("-----CREATE SCORE QUERY", "SUCCESS: " + object.toString());
+                    Log.i("-----CREATE SCORE QUERY", "SUCCESS");
+                    setAnswers(sQuery);
                 }
                 if (e != null) {
                     Log.i("-----CREATE SCORE QUERY", "ERROR: " + e.getLocalizedMessage());
@@ -208,6 +216,8 @@ public class GameStartActivity extends AppCompatActivity {
     public void updateScore(CloudObject object, int rightAnswer, int wrongAnswer, double payouts, double earnings) throws CloudException {
         object.set("right", rightAnswer + this.rightAnswer);
         object.set("wrong", wrongAnswer + this.wrongAnswer);
+        object.set("tempRight", rightAnswer);
+        object.set("tempWrong", wrongAnswer);
         object.set("payouts", payouts + this.earned);
         object.set("earnings", earnings + this.earned);
         object.save(new CloudObjectCallback() {
@@ -215,7 +225,8 @@ public class GameStartActivity extends AppCompatActivity {
             public void done(CloudObject object, CloudException e) throws CloudException {
                 if (object != null) {
                     // Success
-                    Log.i("-------NEW SCORE OBJECT", "SUCCESS I: " + object.getId());
+                    Log.i("-------NEW SCORE OBJECT", "SUCCESS");
+                    setAnswers(sQuery);
                 }
                 if (e != null) {
                     // Error
@@ -231,7 +242,7 @@ public class GameStartActivity extends AppCompatActivity {
             @Override
             public void done(CloudObject object, CloudException e) throws CloudException {
                 if (object != null) {
-                    Log.i("-------FIND SCORE QUERY", "SUCCESS I: " + object.getId());
+                    Log.i("-------FIND SCORE QUERY", "SUCCESS");
 
                     updateScore(object,
                             object.getInteger("right"),
@@ -239,7 +250,7 @@ public class GameStartActivity extends AppCompatActivity {
                             Double.valueOf(object.get("payouts").toString()),
                             Double.valueOf(object.get("earnings").toString()));
                 } else {
-                    createScore(sObject, rightAnswer, wrongAnswer, earned);
+                    createScore(sObject);
                 }
                 if (e != null && object == null) {
                     Log.i("-------FIND SCORE QUERY", "ERROR: " + e.getLocalizedMessage());
@@ -250,29 +261,29 @@ public class GameStartActivity extends AppCompatActivity {
 
     public void answered(CloudObject object) throws CloudException {
         Log.i("------UPDATE ANS OBJECT", "A: " + answered);
-        Log.i("------UPDATE ANS OBJECT", "W: " + wrongAnswer);
         Log.i("------UPDATE ANS OBJECT", "R: " + rightAnswer);
+        Log.i("------UPDATE ANS OBJECT", "W: " + wrongAnswer);
 
-        CloudUser [] user = {currentUser};
+        int answered = numberOfRight + numberOfWrong;
+        double earnings = answered / 100.00;
+        double dividend = earnings / answered;
+
         object.set("earnings", earnings);
         object.set("dividend", dividend);
-        object.set("answered", user);
-        if (wrongAnswer == 1) {
-            object.set("wrong", user);
-        }
-        if (rightAnswer == 1) {
-            object.set("right", user);
-        }
+        object.set("answered", answered);
+        object.set("right", numberOfRight);
+        object.set("wrong", numberOfWrong);
+
         object.save(new CloudObjectCallback() {
             @Override
             public void done(CloudObject object, CloudException e) throws CloudException {
                 if (object != null) {
                     // Success
-                    Log.i("------UPDATE ANS OBJECT", "SUCCESS I: " + object.get("answered"));
+                    Log.i("------UPDATE ANS OBJECT", "SUCCESS");
                 }
                 if (e != null) {
                     // Error
-                    Log.i("------UPDATE ANS ERROR:", e.getLocalizedMessage());
+                    Log.i("-----UPDATE ANS ERROR: ", e.getLocalizedMessage());
                 }
             }
         });
@@ -283,11 +294,39 @@ public class GameStartActivity extends AppCompatActivity {
             @Override
             public void done(CloudObject object, CloudException e) throws CloudException {
                 if (object != null) {
-                    Log.i("---------FIND ANS QUERY", "SUCCESS I: " + object);
+                    Log.i("---------FIND ANS QUERY", "SUCCESS");
                     answered(object);
                 }
                 if (e != null) {
                     Log.i("---------FIND ANS QUERY", "ERROR: " + e.getLocalizedMessage());
+                }
+            }
+        });
+    }
+
+    public void setAnswers(final CloudQuery query) throws CloudException {
+        query.setLimit(10000);
+        query.find(new CloudObjectArrayCallback() {
+            @Override
+            public void done(CloudObject[] objects, CloudException e) throws CloudException {
+                if (objects != null) {
+                    // Success
+                    Log.i("QUERY:", "SUCCESS" + objects.length);
+
+                    right = new int[objects.length];
+                    wrong = new int[objects.length];
+
+                    for (int i = 0; i < objects.length; i++) {
+                        right[i] = objects[i].getInteger("tempRight");
+                        wrong[i] = objects[i].getInteger("tempWrong");
+
+                        numberOfRight += right[i];
+                        numberOfWrong += wrong[i];
+                    }
+                }
+                if (e != null) {
+                    // Error
+                    Log.i("QUERY:", "ERROR " + e.getLocalizedMessage());
                 }
             }
         });
@@ -305,11 +344,11 @@ public class GameStartActivity extends AppCompatActivity {
                     questionT = object.get("question").toString();
                     answer = object.get("answer").toString();
 
-                    Log.i("------------------ID", "I: " + questionID);
+                    Log.i("------------------ID", "SUCCESS");
                 }
                 if (e != null) {
                     // Error
-                    Log.i("-------------QUERY:", "ERROR" + e.getLocalizedMessage());
+                    Log.i("-------------QUERY:", "ERROR: " + e.getLocalizedMessage());
                 }
             }
         });

@@ -18,7 +18,7 @@ public class BackUpCode {
     private String questionT;
     private String answer;
 
-    // BY RANDOM
+    // GET QUESTIONS IDS BY RANROM
     public void queryID(final CloudQuery query) throws CloudException {
         query.setLimit(10000);
         query.find(new CloudObjectArrayCallback() {
@@ -53,6 +53,44 @@ public class BackUpCode {
                         }
                     });
 
+                }
+                if (e != null) {
+                    // Error
+                    Log.i("QUERY:", "ERROR " + e.getLocalizedMessage());
+                }
+            }
+        });
+    }
+
+
+
+
+
+    private int [] right;
+    private int [] wrong;
+    private int numberOfRight = 0;
+    private int numberOfWrong = 0;
+
+    // GET RIGHT AND WRONG ANSWERS FROM ALL USERS
+    public void setAnswers(final CloudQuery query) throws CloudException {
+        query.setLimit(10000);
+        query.find(new CloudObjectArrayCallback() {
+            @Override
+            public void done(CloudObject[] objects, CloudException e) throws CloudException {
+                if (objects != null) {
+                    // Success
+                    Log.i("QUERY:", "SUCCESS" + objects.length);
+
+                    right = new int[objects.length];
+                    wrong = new int[objects.length];
+
+                    for (int i = 0; i < objects.length; i++) {
+                        right[i] = objects[i].getInteger("right");
+                        wrong[i] = objects[i].getInteger("wrong");
+
+                        numberOfRight += right[i];
+                        numberOfWrong += wrong[i];
+                    }
                 }
                 if (e != null) {
                     // Error

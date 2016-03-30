@@ -32,14 +32,8 @@ public class WelcomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
 
-        InitCloudboost.initClient();
-
         relativeLayout = (RelativeLayout) findViewById(R.id.wRelativeLayout);
 
-        if (CloudUser.getcurrentUser() != null) {
-            Intent showHomeActivity = new Intent(this, HomeActivity.class);
-            startActivity(showHomeActivity);
-        }
         //Snackbar.make(relativeLayout, "Sign in failed. Please Try again...", Snackbar.LENGTH_LONG).show();
         //new AddToTable().execute();
     }
