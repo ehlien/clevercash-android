@@ -216,8 +216,8 @@ public class GameStartActivity extends AppCompatActivity {
     public void updateScore(CloudObject object, int rightAnswer, int wrongAnswer, double payouts, double earnings) throws CloudException {
         object.set("right", rightAnswer + this.rightAnswer);
         object.set("wrong", wrongAnswer + this.wrongAnswer);
-        object.set("tempRight", rightAnswer);
-        object.set("tempWrong", wrongAnswer);
+        object.set("tempRight", this.rightAnswer);
+        object.set("tempWrong", this.wrongAnswer);
         object.set("payouts", payouts + this.earned);
         object.set("earnings", earnings + this.earned);
         object.save(new CloudObjectCallback() {
@@ -316,12 +316,21 @@ public class GameStartActivity extends AppCompatActivity {
                     right = new int[objects.length];
                     wrong = new int[objects.length];
 
+                    Log.i("----------QUERY:", "RIGHT L: " + right.length);
+                    Log.i("----------QUERY:", "WRONG R: " + wrong.length);
+
                     for (int i = 0; i < objects.length; i++) {
                         right[i] = objects[i].getInteger("tempRight");
                         wrong[i] = objects[i].getInteger("tempWrong");
 
+                        Log.i("---------TEMP R", "RIGHT L: " + right.length);
+                        Log.i("---------TEMP W", "WRONG L: " + wrong.length);
+
                         numberOfRight += right[i];
                         numberOfWrong += wrong[i];
+
+                        Log.i("---------TEMP R", "RIGHT #: " + numberOfRight);
+                        Log.i("---------TEMP W", "WRONG #: " + numberOfWrong);
                     }
                 }
                 if (e != null) {

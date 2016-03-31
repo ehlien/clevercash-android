@@ -25,8 +25,6 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        InitCloudboost.initClient();
-
         Log.i("HOME:", "USER: " + CloudUser.getcurrentUser().getId());
     }
 

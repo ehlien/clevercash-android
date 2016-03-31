@@ -16,8 +16,6 @@ public class LaunchScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch_screen);
 
-        InitCloudboost.initClient();
-
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
