@@ -26,19 +26,8 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="0:43"
             android:id="@+id/liveTimerTV"
-            android:gravity="center"
-            android:layout_weight=".1" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="• 1000 PLAYERS LIVE •"
-            android:id="@+id/playersTV"
-            android:layout_weight=".8"
-            android:gravity="center|bottom"
-            android:textSize="20dp"
-            android:paddingBottom="10dp"
-            android:textColor="@color/colorRed" />
+            android:gravity="center|top"
+            android:layout_weight=".9" />
 
         <TextView
             android:layout_width="match_parent"

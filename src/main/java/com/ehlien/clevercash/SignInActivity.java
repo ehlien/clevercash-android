@@ -40,7 +40,6 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        progress.dismiss();
     }
 
     public void signInButton(View view) {
@@ -98,7 +97,6 @@ public class SignInActivity extends AppCompatActivity {
                 }
                 if (e != null) {
                     // Error
-                    progress.dismiss();
                     Snackbar.make(relativeLayout, "Sign in failed. Please Try again...", Snackbar.LENGTH_LONG).show();
                 }
             }

@@ -6,16 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.RelativeLayout;
-
-import org.json.simple.parser.ParseException;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 import io.cloudboost.CloudException;
-import io.cloudboost.CloudObject;
-import io.cloudboost.CloudObjectCallback;
 import io.cloudboost.CloudUser;
 import io.cloudboost.CloudUserCallback;
 
@@ -24,7 +16,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        //InitCloudboost.initClient();
         Log.i("HOME:", "USER: " + CloudUser.getcurrentUser().getId());
     }
 

@@ -29,8 +29,9 @@ public class GameUpdateActivity extends AppCompatActivity {
     private TextView youEarnedNTV;
     private TextView timer5TV;
 
-    private CloudQuery scoresQuery = new CloudQuery("Scores");
-    private CloudUser currentuser = CloudUser.getcurrentUser();
+    private CloudQuery qaQuery = new CloudQuery("QuestionsAndAnswers");
+    private CloudQuery sQuery = new CloudQuery("Scores");
+    private CloudUser currentUser = CloudUser.getcurrentUser();
 
     int pA;
     int gW;
@@ -38,6 +39,8 @@ public class GameUpdateActivity extends AppCompatActivity {
     double qE;
     double yD;
     double yE;
+    String questionID;
+    String rightAnswer;
 
     private Bundle bundle;
     private Handler handler;
@@ -56,7 +59,7 @@ public class GameUpdateActivity extends AppCompatActivity {
 
             timer5TV.setText("NEXT QUESTION IN " + time);
             handler.postDelayed(this, 1000);
-            String[] test = {"0:30", "0:00"};
+            String[] test = {"0:00"};
             for (int i = 0; i < test.length; i++) {
                 if (time.equals(test[i])) {
                     finish();
@@ -81,6 +84,17 @@ public class GameUpdateActivity extends AppCompatActivity {
         yourDividendNTV = (TextView) findViewById(R.id.yourDividendNTV);
         youEarnedNTV = (TextView) findViewById(R.id.youEarnedNTV);
         timer5TV = (TextView) findViewById(R.id.timer5TV);
+
+        playersAnsweredNTV.setText("");
+        gotWrongNTV.setText("");
+        gotRightNTV.setText("");
+        questionEarningsNTV.setText("$0.00");
+        yourDividendNTV.setText("$0.00");
+        youEarnedNTV.setText("$0.00");
+
+        Intent receive = getIntent();
+        questionID = receive.getStringExtra("qID");
+        rightAnswer = receive.getStringExtra("rA");
 
         handler = new Handler(getMainLooper());
         handler.postDelayed(runnable, 10);
@@ -131,21 +145,31 @@ public class GameUpdateActivity extends AppCompatActivity {
         // Back Button Disabled
     }
 
-    public void updateScore(CloudUser user) throws CloudException {
-        scoresQuery.equalTo("username", user);
-        scoresQuery.findOne(new CloudObjectCallback() {
+    public void showScore() throws CloudException {
+        Log.i("-------QUESTION ID", "# " + questionID);
+        qaQuery.equalTo("id", questionID);
+        qaQuery.findOne(new CloudObjectCallback() {
             @Override
             public void done(CloudObject object, CloudException e) throws CloudException {
                 if (object != null) {
-                    Log.i("-------FIND SCORE QUERY", "SUCCESS: " + object.getId());
-                    Log.i("-------FIND SCORE QUERY", "SUCCESS: " + object.get("username"));
-                    Log.i("-------FIND SCORE QUERY", "SUCCESS: " + object.get("right"));
-                    Log.i("-------FIND SCORE QUERY", "SUCCESS: " + object.get("wrong"));
-                    Log.i("-------FIND SCORE QUERY", "SUCCESS: " + object.get("payouts"));
-                    Log.i("-------FIND SCORE QUERY", "SUCCESS: " + object.get("earnings"));
-
-                    gW = Integer.valueOf(object.get("wrong").toString());
+                    Log.i("-------FIND SCORE QUERY", "SUCCESS");
+                    pA = Integer.valueOf(object.get("answered").toString());
                     gR = Integer.valueOf(object.get("right").toString());
+                    gW = Integer.valueOf(object.get("wrong").toString());
+                    qE = Double.valueOf(object.get("earnings").toString());
+                    yD = Double.valueOf(object.get("dividend").toString());
+                }
+                if (e != null) {
+                    Log.i("-------FIND SCORE QUERY", "ERROR: " + e.getLocalizedMessage());
+                }
+            }
+        });
+        sQuery.equalTo("username", currentUser);
+        sQuery.findOne(new CloudObjectCallback() {
+            @Override
+            public void done(CloudObject object, CloudException e) throws CloudException {
+                if (object != null) {
+                    Log.i("-------FIND SCORE QUERY", "SUCCESS");
                     yE = Double.valueOf(object.get("earnings").toString());
                 }
                 if (e != null) {
@@ -164,7 +188,7 @@ public class GameUpdateActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                updateScore(currentuser);
+                showScore();
             } catch (CloudException e) {
                 e.printStackTrace();
             }
@@ -173,9 +197,16 @@ public class GameUpdateActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
-            gotWrongNTV.setText(String.valueOf(gW));
+            playersAnsweredNTV.setText(String.valueOf(pA));
             gotRightNTV.setText(String.valueOf(gR));
-            youEarnedNTV.setText(String.valueOf(yE));
+            gotWrongNTV.setText(String.valueOf(gW));
+            questionEarningsNTV.setText(String.format(Locale.CANADA, "$%.2f", (float)qE));
+            if (Integer.parseInt(rightAnswer) == 1) {
+                yourDividendNTV.setText(String.format(Locale.CANADA, "$%.2f", (float) yD));
+            } else {
+                yourDividendNTV.setText(String.format(Locale.CANADA, "$%.2f", (float) 0.00));
+            }
+            youEarnedNTV.setText(String.format(Locale.CANADA, "$%.2f", (float)yE));
         }
     }
 }

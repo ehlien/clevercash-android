@@ -11,6 +11,7 @@
     <string name="stringTimer">0:%1$d</string>
     <string name="stringForgotPassword">Forgot Password</string>
     <string name="stringGameUpdate">Update</string>
+    <string name="stringGameSave">Update</string>
     <string name="stringLoader"></string>
     <string name="stringSignUpError">The username or email you have entered have already been used to sign up. Please try again.</string>
 

@@ -12,45 +12,32 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-
 import io.cloudboost.*;
 
 public class GameStartActivity extends AppCompatActivity {
-    private TextView questionNTV;
     private TextView questionTTV;
     private EditText answerET;
-    private TextView answeringTV;
-    private TextView earningsTV;
-    private TextView dividendTV;
+    private TextView wordsTV;
     private TextView earnedTV;
     private TextView timer20TV;
 
     private CloudQuery qaQuery = new CloudQuery("QuestionsAndAnswers");
-    private CloudObject qaObject = new CloudObject("QuestionsAndAnswers");
     private CloudQuery sQuery = new CloudQuery("Scores");
     private CloudObject sObject = new CloudObject("Scores");
     private CloudUser currentUser = CloudUser.getcurrentUser();
 
-    private int questionN;
+    static String questionID;
     private String questionT;
     private String answer;
+    private int words = 0;
     private int answered = 0;
     private int rightAnswer = 0;
     private int wrongAnswer = 0;
-    private int answering;
-    private double earnings;
-    private double dividend;
-    private double earned;
-    private String questionID;
-
-    private int [] right;
-    private int [] wrong;
-    private int numberOfRight = 0;
-    private int numberOfWrong = 0;
+    private double earnings = 0;
+    private double earned = 0;
 
     private Handler handler;
     private Runnable runnable = new Runnable() {
@@ -58,6 +45,7 @@ public class GameStartActivity extends AppCompatActivity {
         public void run() {
             Calendar today = Calendar.getInstance();
             Calendar endOfYear = Calendar.getInstance();
+
             endOfYear.setTime(new Date(0));
             endOfYear.set(Calendar.DAY_OF_MONTH, 31);
             endOfYear.set(Calendar.MONTH, 11);
@@ -67,24 +55,15 @@ public class GameStartActivity extends AppCompatActivity {
 
             timer20TV.setText(new SimpleDateFormat("0:ss", Locale.US).format(t));
             handler.postDelayed(this, 1000);
-            String[] test = {"0:35", "0:05"};
+            String[] test = {"0:20"};
             for (String time : test) {
                 if (timer20TV.getText().equals(time)) {
-                    if (answerET.getText().toString().isEmpty()) {
-                        Toast toast = Toast.makeText(getApplicationContext(),
-                                "WRONG!",
-                                Toast.LENGTH_SHORT);
-                        toast.show();
-                        answered++;
-                        wrongAnswer++;
-                        Log.i("----------WRONG:", "#" + wrongAnswer);
-                        new Score().execute();
-                    }
+                    answerCheck();
 
-                    Intent showGameUpdateActivity = new Intent(getApplicationContext(), GameUpdateActivity.class);
-                    showGameUpdateActivity.putExtra("pA", answering);
-                    showGameUpdateActivity.putExtra("qE", earnings);
-                    startActivity(showGameUpdateActivity);
+                    Intent showGameSavingActivity = new Intent(getApplicationContext(), GameSavingActivity.class);
+                    showGameSavingActivity.putExtra("qID", questionID);
+                    showGameSavingActivity.putExtra("rA", String.valueOf(rightAnswer));
+                    startActivity(showGameSavingActivity);
                 }
             }
         }
@@ -99,30 +78,20 @@ public class GameStartActivity extends AppCompatActivity {
 
         InitCloudboost.initClient();
 
-        questionNTV = (TextView) findViewById(R.id.questionNTV);
         questionTTV = (TextView) findViewById(R.id.questionTTV);
         answerET = (EditText) findViewById(R.id.answerET);
-        answeringTV = (TextView) findViewById(R.id.playersAnsweringTV);
-        earningsTV = (TextView) findViewById(R.id.questionEarningsTV);
-        dividendTV = (TextView) findViewById(R.id.possibleDividendTV);
-        earnedTV = (TextView) findViewById(R.id.yourEarningsTV);
+        wordsTV = (TextView) findViewById(R.id.numberOfWordsTV);
+        earnedTV = (TextView) findViewById(R.id.earningsTV);
         timer20TV = (TextView) findViewById(R.id.timer20TV);
 
-        answering = 874;
-        earnings = ((double) answering / 100);
-        dividend = (earnings / answering);
-        earned = 10.25;
-
         questionTTV.setText("");
-        answeringTV.setText(String.valueOf(answering));
-        earningsTV.setText("$" + earnings);
-        dividendTV.setText("$" + dividend);
-        earnedTV.setText("$" + earned);
+        wordsTV.setText("");
+        earnedTV.setText("");
 
         handler = new Handler(getMainLooper());
         handler.postDelayed(runnable, 10);
 
-        new QueryID().execute();
+        new Question().execute();
     }
 
     @Override
@@ -147,9 +116,6 @@ public class GameStartActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         Log.i("--------START ACTIVITY:", "5 STOP");
-        if (answered != 0) {
-            new Answered().execute();
-        }
         finish();
     }
 
@@ -172,23 +138,28 @@ public class GameStartActivity extends AppCompatActivity {
     }
 
     public void answerButton(View view) {
-        answerET = (EditText) findViewById(R.id.answerET);
         answerET.setEnabled(false);
         answerET.setClickable(false);
+        answerCheck();
+    }
 
-        if (answer.equalsIgnoreCase(answerET.getText().toString())) {
-            Toast toast = Toast.makeText(getApplicationContext(), "CORRECT!", Toast.LENGTH_SHORT);
-            toast.show();
-            rightAnswer++;
-            Log.i("----------RIGHT:", "#" + rightAnswer);
-        } else {
-            Toast toast = Toast.makeText(getApplicationContext(), "WRONG!", Toast.LENGTH_SHORT);
-            toast.show();
-            wrongAnswer++;
-            Log.i("----------WRONG:", "#" + wrongAnswer);
+    public void answerCheck() {
+        if (answered == 0) {
+            answered++;
+
+            if (answer.equalsIgnoreCase(answerET.getText().toString())) {
+                rightAnswer++;
+                Toast.makeText(getApplicationContext(), "RIGHT!", Toast.LENGTH_SHORT).show();
+            } else {
+                wrongAnswer++;
+                Toast.makeText(getApplicationContext(), "WRONG!", Toast.LENGTH_SHORT).show();
+            }
+            Log.i("----------ANSWERED:", "= " + answered);
+            Log.i("----------RIGHT:", "= " + rightAnswer);
+            Log.i("----------WRONG:", "= " + wrongAnswer);
+
+            new Score().execute();
         }
-        answered++;
-        new Score().execute();
     }
 
     public void createScore(CloudObject object) throws CloudException {
@@ -197,17 +168,23 @@ public class GameStartActivity extends AppCompatActivity {
         object.set("wrong", wrongAnswer);
         object.set("tempRight", rightAnswer);
         object.set("tempWrong", wrongAnswer);
-        object.set("payouts", earned);
-        object.set("earnings", earned);
+        /*if (rightAnswer == 1) {
+            object.set("payouts", earned);
+            object.set("earnings", earned);
+        }*/
+        if (wrongAnswer == 1) {
+            object.set("payouts", 0.00);
+            object.set("earnings", 0.00);
+        }
         object.save(new CloudObjectCallback() {
             @Override
             public void done(CloudObject object, CloudException e) throws CloudException {
                 if (object != null) {
-                    Log.i("-----CREATE SCORE QUERY", "SUCCESS");
-                    setAnswers(sQuery);
+                    Log.i("----------SCORE", "NEW USER SCORE CREATED");
+                    //setAnswers(sQuery);
                 }
                 if (e != null) {
-                    Log.i("-----CREATE SCORE QUERY", "ERROR: " + e.getLocalizedMessage());
+                    Log.i("----------SCORE", "ERROR: " + e.getLocalizedMessage());
                 }
             }
         });
@@ -218,19 +195,21 @@ public class GameStartActivity extends AppCompatActivity {
         object.set("wrong", wrongAnswer + this.wrongAnswer);
         object.set("tempRight", this.rightAnswer);
         object.set("tempWrong", this.wrongAnswer);
-        object.set("payouts", payouts + this.earned);
-        object.set("earnings", earnings + this.earned);
+        /*if (rightAnswer == 1) {
+            object.set("payouts", payouts + this.earned);
+            object.set("earnings", earnings + this.earned);
+        }*/
         object.save(new CloudObjectCallback() {
             @Override
             public void done(CloudObject object, CloudException e) throws CloudException {
                 if (object != null) {
                     // Success
-                    Log.i("-------NEW SCORE OBJECT", "SUCCESS");
-                    setAnswers(sQuery);
+                    Log.i("----------SCORE", "USER SCORE UPDATED");
+                    //setAnswers(sQuery);
                 }
                 if (e != null) {
                     // Error
-                    Log.i("----SCORE OBJECT ERROR:", e.getLocalizedMessage());
+                    Log.i("----------SCORE:", "ERROR: " + e.getLocalizedMessage());
                 }
             }
         });
@@ -241,107 +220,57 @@ public class GameStartActivity extends AppCompatActivity {
         query.findOne(new CloudObjectCallback() {
             @Override
             public void done(CloudObject object, CloudException e) throws CloudException {
-                if (object != null) {
+                if (object == null) {
                     Log.i("-------FIND SCORE QUERY", "SUCCESS");
-
+                    createScore(sObject);
+                } else if (object != null) {
                     updateScore(object,
                             object.getInteger("right"),
                             object.getInteger("wrong"),
                             Double.valueOf(object.get("payouts").toString()),
                             Double.valueOf(object.get("earnings").toString()));
                 } else {
-                    createScore(sObject);
-                }
-                if (e != null && object == null) {
                     Log.i("-------FIND SCORE QUERY", "ERROR: " + e.getLocalizedMessage());
                 }
             }
         });
     }
 
-    public void answered(CloudObject object) throws CloudException {
-        Log.i("------UPDATE ANS OBJECT", "A: " + answered);
-        Log.i("------UPDATE ANS OBJECT", "R: " + rightAnswer);
-        Log.i("------UPDATE ANS OBJECT", "W: " + wrongAnswer);
-
-        int answered = numberOfRight + numberOfWrong;
-        double earnings = answered / 100.00;
-        double dividend = earnings / answered;
-
-        object.set("earnings", earnings);
-        object.set("dividend", dividend);
-        object.set("answered", answered);
-        object.set("right", numberOfRight);
-        object.set("wrong", numberOfWrong);
-
-        object.save(new CloudObjectCallback() {
+    public void showYourEarnings(CloudQuery query) throws CloudException {
+        query.equalTo("username", currentUser);
+        query.findOne(new CloudObjectCallback() {
             @Override
             public void done(CloudObject object, CloudException e) throws CloudException {
-                if (object != null) {
-                    // Success
-                    Log.i("------UPDATE ANS OBJECT", "SUCCESS");
-                }
-                if (e != null) {
-                    // Error
-                    Log.i("-----UPDATE ANS ERROR: ", e.getLocalizedMessage());
-                }
-            }
-        });
-    }
-
-    public void findAnswered(CloudQuery query) throws CloudException {
-        query.findById(questionID, new CloudObjectCallback() {
-            @Override
-            public void done(CloudObject object, CloudException e) throws CloudException {
-                if (object != null) {
-                    Log.i("---------FIND ANS QUERY", "SUCCESS");
-                    answered(object);
-                }
-                if (e != null) {
-                    Log.i("---------FIND ANS QUERY", "ERROR: " + e.getLocalizedMessage());
+                if (object == null) {
+                    Log.i("-------FIND USER SCORE", "SUCCESS");
+                    earnings = 0.00;
+                } else if (object != null) {
+                    earnings = Double.valueOf( object.get("earnings").toString() );
+                } else {
+                    Log.i("-------FIND USER SCORE", "ERROR: " + e.getLocalizedMessage());
                 }
             }
         });
     }
 
-    public void setAnswers(final CloudQuery query) throws CloudException {
-        query.setLimit(10000);
-        query.find(new CloudObjectArrayCallback() {
-            @Override
-            public void done(CloudObject[] objects, CloudException e) throws CloudException {
-                if (objects != null) {
-                    // Success
-                    Log.i("QUERY:", "SUCCESS" + objects.length);
-
-                    right = new int[objects.length];
-                    wrong = new int[objects.length];
-
-                    Log.i("----------QUERY:", "RIGHT L: " + right.length);
-                    Log.i("----------QUERY:", "WRONG R: " + wrong.length);
-
-                    for (int i = 0; i < objects.length; i++) {
-                        right[i] = objects[i].getInteger("tempRight");
-                        wrong[i] = objects[i].getInteger("tempWrong");
-
-                        Log.i("---------TEMP R", "RIGHT L: " + right.length);
-                        Log.i("---------TEMP W", "WRONG L: " + wrong.length);
-
-                        numberOfRight += right[i];
-                        numberOfWrong += wrong[i];
-
-                        Log.i("---------TEMP R", "RIGHT #: " + numberOfRight);
-                        Log.i("---------TEMP W", "WRONG #: " + numberOfWrong);
-                    }
-                }
-                if (e != null) {
-                    // Error
-                    Log.i("QUERY:", "ERROR " + e.getLocalizedMessage());
-                }
+    public static int countWords(String s){
+        int wordCount = 0;
+        boolean word = false;
+        int endOfLine = s.length() - 1;
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isLetter(s.charAt(i)) && i != endOfLine) {
+                word = true;
+            } else if (!Character.isLetter(s.charAt(i)) && word) {
+                wordCount++;
+                word = false;
+            } else if (Character.isLetter(s.charAt(i)) && i == endOfLine) {
+                wordCount++;
             }
-        });
+        }
+        return wordCount;
     }
 
-    public void queryID(CloudQuery query) throws CloudException {
+    public void showQuestion(CloudQuery query) throws CloudException {
         query.equalTo("answered", null);
         query.orderByDesc("createdAt");
         query.findOne(new CloudObjectCallback() {
@@ -349,11 +278,12 @@ public class GameStartActivity extends AppCompatActivity {
             public void done(CloudObject object, CloudException e) throws CloudException {
                 if (object != null) {
                     // Success
+                    Log.i("------------------ID", "SUCCESS");
                     questionID = object.getId();
                     questionT = object.get("question").toString();
                     answer = object.get("answer").toString();
-
-                    Log.i("------------------ID", "SUCCESS");
+                    words = countWords(answer);
+                    showYourEarnings(sQuery);
                 }
                 if (e != null) {
                     // Error
@@ -363,7 +293,7 @@ public class GameStartActivity extends AppCompatActivity {
         });
     }
 
-    private class QueryID extends AsyncTask<Void, Void, Void> {
+    private class Question extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -372,7 +302,7 @@ public class GameStartActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                queryID(qaQuery);
+                showQuestion(qaQuery);
             } catch (CloudException e) {
                 e.printStackTrace();
             }
@@ -382,6 +312,8 @@ public class GameStartActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             questionTTV.setText(questionT);
+            wordsTV.setText(String.valueOf(words));
+            earnedTV.setText(String.format(Locale.CANADA, "$%.2f", (float)earned));
         }
     }
 
@@ -406,24 +338,4 @@ public class GameStartActivity extends AppCompatActivity {
         }
     }
 
-    private class Answered extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                findAnswered(qaQuery);
-            } catch (CloudException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-        }
-    }
 }

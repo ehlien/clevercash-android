@@ -62,12 +62,8 @@ public class BackUpCode {
         });
     }
 
-
-
-
-
-    private int [] right;
-    private int [] wrong;
+    private int[] right;
+    private int[] wrong;
     private int numberOfRight = 0;
     private int numberOfWrong = 0;
 
@@ -99,5 +95,76 @@ public class BackUpCode {
             }
         });
     }
+/*
+    // ---------------------------------------------------------------------------------------------
 
+        public void answered(CloudObject object) throws CloudException {
+            // QUESTION AND ANSWER TABLE
+            Log.i("------UPDATE ANS OBJECT", "A: " + answered);
+            Log.i("------UPDATE ANS OBJECT", "R: " + rightAnswer);
+            Log.i("------UPDATE ANS OBJECT", "W: " + wrongAnswer);
+
+            int answered = numberOfRight + numberOfWrong;
+            double earnings = answered / 100.00;
+            double dividend = earnings / answered;
+
+            object.set("earnings", earnings);
+            object.set("dividend", dividend);
+            object.set("answered", answered);
+            object.set("right", numberOfRight);
+            object.set("wrong", numberOfWrong);
+
+            object.save(new CloudObjectCallback() {
+                @Override
+                public void done(CloudObject object, CloudException e) throws CloudException {
+                    if (object != null) {
+                        // Success
+                        Log.i("------UPDATE ANS OBJECT", "SUCCESS");
+                    }
+                    if (e != null) {
+                        // Error
+                        Log.i("-----UPDATE ANS ERROR: ", e.getLocalizedMessage());
+                    }
+                }
+            });
+        }
+
+        public void findAnswered(CloudQuery query) throws CloudException {
+            query.findById(questionID, new CloudObjectCallback() {
+                @Override
+                public void done(CloudObject object, CloudException e) throws CloudException {
+                    if (object != null) {
+                        Log.i("---------FIND ANS QUERY", "SUCCESS");
+                        answered(object);
+                    }
+                    if (e != null) {
+                        Log.i("---------FIND ANS QUERY", "ERROR: " + e.getLocalizedMessage());
+                    }
+                }
+            });
+        }
+
+        private class Score extends AsyncTask<Void, Void, Void> {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    findScore(sQuery);
+                } catch (CloudException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+            }
+        }
+    }
+
+*/
 }
