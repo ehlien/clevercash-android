@@ -193,7 +193,8 @@ public class GameSavingActivity extends AppCompatActivity {
                     addEarningsToScoreTable(object,
                             Double.valueOf(object.get("payouts").toString()),
                             Double.valueOf(object.get("earnings").toString()));
-                } else {
+                }
+                if (e != null) {
                     Log.i("-------FIND SCORE QUERY", "ERROR: " + e.getLocalizedMessage());
                 }
             }

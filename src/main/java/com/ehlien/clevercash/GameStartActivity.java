@@ -172,10 +172,10 @@ public class GameStartActivity extends AppCompatActivity {
             object.set("payouts", earned);
             object.set("earnings", earned);
         }*/
-        if (wrongAnswer == 1) {
+        //if (wrongAnswer == 1) {
             object.set("payouts", 0.00);
             object.set("earnings", 0.00);
-        }
+        //}
         object.save(new CloudObjectCallback() {
             @Override
             public void done(CloudObject object, CloudException e) throws CloudException {
