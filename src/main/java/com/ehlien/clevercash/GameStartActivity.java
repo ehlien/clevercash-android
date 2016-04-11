@@ -164,6 +164,7 @@ public class GameStartActivity extends AppCompatActivity {
 
     public void createScore(CloudObject object) throws CloudException {
         object.set("username", currentUser);
+        object.set("user", SignInActivity.username);
         object.set("right", rightAnswer);
         object.set("wrong", wrongAnswer);
         object.set("tempRight", rightAnswer);

@@ -12,4 +12,73 @@
     android:background="@color/colorOrange"
     android:id="@+id/leaderboardRelativeLayout">
 
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="75dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="GLOBAL LEADERBOARD"
+        android:id="@+id/textView3"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_below="@+id/textView3"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorSkyBlue"
+        android:weightSum="1"
+        android:id="@+id/linearLayout2">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="PLAYERS"
+            android:id="@+id/textView4"
+            android:layout_weight=".6"
+            android:textStyle="bold"
+            android:gravity="center_vertical"
+            android:paddingLeft="25dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="EARNED"
+            android:id="@+id/textView5"
+            android:layout_weight=".4"
+            android:textStyle="bold"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/linearLayout2"
+        android:layout_centerHorizontal="true"
+        android:weightSum="1">
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rankLV"
+            android:layout_weight=".4" />
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/playerNameLV"
+            android:layout_weight=".3" />
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/playersEarnedLV"
+            android:layout_weight=".3"
+            android:textAlignment="center" />
+    </LinearLayout>
+
 </RelativeLayout>

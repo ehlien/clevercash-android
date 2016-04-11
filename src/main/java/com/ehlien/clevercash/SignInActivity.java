@@ -22,7 +22,7 @@ public class SignInActivity extends AppCompatActivity {
     private ProgressDialog progress;
     private Handler handler = new Handler();
 
-    private String username;
+    public static String username;
     private String password;
 
     @Override
